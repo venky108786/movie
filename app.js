@@ -6,6 +6,7 @@ const app = express();
 const dbpath = path.join(__dirname, "moviesData.db");
 app.use(express.json());
 let db = null;
+
 const moviesNameList=(object){
     return { movieName:object.movie_name }
 }
@@ -38,4 +39,25 @@ ap.post('/movies/',async(request,response)=>{
     value(${movieId},${directorId},${movieName},${leadActor};`
     const moviesName = await db.run(postMovie)
     response.send('Movie Successfully Added')
+})
+
+app.get('/movies/:movieId/', async(request,response)=>{
+    const {movieId}=require.params
+    const getmovie=`select * from movie where movie_id = ${movieId};`
+    const moviesName=await db.get(getmovie)
+    response.send(moviesName)
+
+})
+
+app.put('/movies/:movieId/', async(request,response)=>{
+    const {directorId,movieName,leadActor}=request.body
+    const{movieId}=request.params
+    const putmovie = `update movie 
+                                set
+                                director_id=${directorId},
+                                movie_name=${movieName},
+                                lead_actor=${leadActor}
+                                where movie_id = ${movieId};`
+    const moviesName = await db.run(putmovie)
+    response.send('Movie Details Updated')
 })
